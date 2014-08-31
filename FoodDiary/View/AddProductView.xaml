@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="FoodDiary.View.AddProductView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="200">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <TextBlock Grid.Column="0" Grid.Row="0" Text="Название" />
+    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" />
+
+    <TextBlock Grid.Column="0" Grid.Row="1" Text="Калорийность" />
+    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding CalValue}" />
+
+    <TextBlock Grid.Column="0" Grid.Row="2" Text="Белки" />
+    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Protein}" />
+
+    <TextBlock Grid.Column="0" Grid.Row="3" Text="Жиры" />
+    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Fat}" />
+
+    <TextBlock Grid.Column="0" Grid.Row="4" Text="Углеводы" />
+    <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Carbohydrate}" />
+
+    <Button Grid.Row="5" Grid.ColumnSpan="2" Content="Ok" Command="{Binding AddProductCommand}" />
+  </Grid>
+</UserControl>
