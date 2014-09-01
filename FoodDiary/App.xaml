@@ -3,6 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
   <Application.Resources>
-    <ResourceDictionary Source="/ReuxablesLegacy;component/inc.xaml" />
+    <ResourceDictionary Source="/ReuxablesLegacy;component/Mercury.xaml" />
   </Application.Resources>
 </Application>

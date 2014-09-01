@@ -80,6 +80,7 @@
     <Compile Include="Model\OneTimePortion.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="ProductCache.cs" />
+    <Compile Include="ValidationRules\WeightValidationRule.cs" />
     <Compile Include="ViewModel\AddProductPresenter.cs" />
     <Compile Include="ViewModel\FoodDiaryPresenter.cs" />
     <Compile Include="View\AddProductView.xaml.cs">
