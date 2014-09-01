@@ -14,9 +14,29 @@ namespace FoodDiary
 {
   public class GooglePortionStorage : IPortionStorage
   {
+    /// <summary>
+    /// Имя файла.
+    /// </summary>
+    private static readonly string SpreadSheetName = FoodDiary.Properties.Settings.Default.SpreadSheetName;
+
+    /// <summary>
+    /// Имя листа с рационом за месяц.
+    /// </summary>
+    private static readonly string MonthWorkSheetName = FoodDiary.Properties.Settings.Default.MonthWorkSheetName;
+
+    /// <summary>
+    /// Номер текущего месяца.
+    /// </summary>
+    private static readonly int CurrentMonthNumber = DateTime.Now.Month;
+
+    /// <summary>
+    /// Имя листа с рационом за текущий месяц.
+    /// </summary>
+    private readonly string CurrentMonthWorkSheetName = string.Join("-", MonthWorkSheetName, CurrentMonthNumber);
+
     public void SaveDailyPortion(DailyPortion dailyPortion)
     {
-      ListFeed listFeed = SpreadsheetsManager.GetRows("Питание2014", "Month-6");
+      ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, CurrentMonthWorkSheetName);
       if (listFeed == null)
         return;
 
@@ -49,7 +69,7 @@ namespace FoodDiary
     /// </summary>
     private void DeleteCurrentDailyPortion()
     {
-      CellQuery cellQuery = SpreadsheetsManager.InitializeCellBasedQuery("Питание2014", "Month-6");
+      CellQuery cellQuery = SpreadsheetsManager.InitializeCellBasedQuery(SpreadSheetName, CurrentMonthWorkSheetName);
       CellFeed cellFeed = SpreadsheetsManager.Service.Query(cellQuery);
 
       string currentDate = DateTime.Now.ToShortDateString();
@@ -119,7 +139,7 @@ namespace FoodDiary
 
     public DailyPortion GetCurrentDailyPortion()
     {
-      ListFeed listFeed = SpreadsheetsManager.GetRows("Питание2014", "Month-6");
+      ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, CurrentMonthWorkSheetName);
       if (listFeed == null)
         return null;
 
