@@ -12,7 +12,7 @@
       <ColumnDefinition Width="Auto" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
-    
+
     <Grid Grid.Column="0">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -30,17 +30,19 @@
                 Margin="5"/>
       <TextBox Grid.Column="1" Grid.Row="0"
                Height="Auto"
-               Margin="5">
+               Margin="5"
+               Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
         <TextBox.Text>
-          <Binding Path="SelectedProductWeight" UpdateSourceTrigger="PropertyChanged">
+          <Binding Path="SelectedProductWeight"
+                   UpdateSourceTrigger="PropertyChanged">
             <Binding.ValidationRules>
-              <r:WeightValidationRule MinWeight="0" MaxWeight="1000" />
+              <r:IntRangeValidationRule />
             </Binding.ValidationRules>
           </Binding>
         </TextBox.Text>
       </TextBox>
     </Grid>
-    
+
     <StackPanel Grid.Column="1">
       <Button Content="Туда &gt;"
               Command="{Binding AddToDailyPortionCommand}"
@@ -55,7 +57,7 @@
               Command="{Binding TestCommand}"
               Margin="5" />
     </StackPanel>
-    
+
     <Grid Grid.Column="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />

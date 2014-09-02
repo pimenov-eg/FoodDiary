@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:r="clr-namespace:FoodDiary"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200">
   <Grid>
@@ -20,19 +21,64 @@
     </Grid.RowDefinitions>
 
     <TextBlock Grid.Column="0" Grid.Row="0" Text="Название" />
-    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Name}" />
+    <TextBox Grid.Column="1" Grid.Row="0" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
+      <TextBox.Text>
+        <Binding Path="Name"
+                 UpdateSourceTrigger="PropertyChanged">
+          <Binding.ValidationRules>
+            <r:FillingStringValidationRule />
+          </Binding.ValidationRules>
+        </Binding>
+      </TextBox.Text>
+    </TextBox>
 
     <TextBlock Grid.Column="0" Grid.Row="1" Text="Калорийность" />
-    <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding CalValue}" />
+    <TextBox Grid.Column="1" Grid.Row="1" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
+      <TextBox.Text>
+        <Binding Path="CalValue"
+               UpdateSourceTrigger="PropertyChanged">
+          <Binding.ValidationRules>
+            <r:IntRangeValidationRule />
+          </Binding.ValidationRules>
+        </Binding>
+      </TextBox.Text>
+    </TextBox>
 
     <TextBlock Grid.Column="0" Grid.Row="2" Text="Белки" />
-    <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Protein}" />
+    <TextBox Grid.Column="1" Grid.Row="2" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
+      <TextBox.Text>
+        <Binding Path="Protein"
+                 UpdateSourceTrigger="PropertyChanged">
+          <Binding.ValidationRules>
+            <r:IntRangeValidationRule />
+          </Binding.ValidationRules>
+        </Binding>
+      </TextBox.Text>
+    </TextBox>
 
     <TextBlock Grid.Column="0" Grid.Row="3" Text="Жиры" />
-    <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Fat}" />
+    <TextBox Grid.Column="1" Grid.Row="3" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
+      <TextBox.Text>
+        <Binding Path="Fat"
+                 UpdateSourceTrigger="PropertyChanged">
+          <Binding.ValidationRules>
+            <r:IntRangeValidationRule />
+          </Binding.ValidationRules>
+        </Binding>
+      </TextBox.Text>
+    </TextBox>
 
     <TextBlock Grid.Column="0" Grid.Row="4" Text="Углеводы" />
-    <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Carbohydrate}" />
+    <TextBox Grid.Column="1" Grid.Row="4" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
+      <TextBox.Text>
+        <Binding Path="Carbohydrate"
+                 UpdateSourceTrigger="PropertyChanged">
+          <Binding.ValidationRules>
+            <r:IntRangeValidationRule />
+          </Binding.ValidationRules>
+        </Binding>
+      </TextBox.Text>
+    </TextBox>
 
     <Button Grid.Row="5" Grid.ColumnSpan="2" Content="Ok" Command="{Binding AddProductCommand}" />
   </Grid>
