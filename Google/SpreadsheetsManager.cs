@@ -10,6 +10,19 @@ namespace Google
 {
   public class SpreadsheetsManager
   {
+    #region 
+    /// <summary>
+    /// Количество столбцов по умолчанию.
+    /// </summary>
+    public const int DefaultColumnCount = 15;
+
+    /// <summary>
+    /// Количество строк по умолчанию.
+    /// </summary>
+    public const int DefaultRowCount = 15;
+
+    #endregion
+
     public static SpreadsheetsService Service { get; set; }
 
     /// <summary>
@@ -62,27 +75,19 @@ namespace Google
     /// <returns>Запрос к сервису.</returns>
     private static ListQuery InitializeListBasedQuery(string spreadsheetName, string worksheetName)
     {
-      if (Service == null)
+      if (SpreadsheetsManager.Service == null)
         return null;
 
-      // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
-      var query = new SpreadsheetQuery();
-
-      var spreadsheet = SpreadsheetsManager.Service.Query(query).Entries
-        .OfType<SpreadsheetEntry>()
-        .Where(e => e.Title.Text == spreadsheetName)
-        .FirstOrDefault();
-
+      var spreadsheet = GetSpreadSheet(spreadsheetName);
       if (spreadsheet == null)
         return null;
 
-      var productsWorksheet = spreadsheet.Worksheets.Entries
-        .OfType<WorksheetEntry>()
-        .Where(w => w.Title.Text == worksheetName)
-        .FirstOrDefault();
+      var worksheet = GetWorkSheet(spreadsheet, worksheetName);
+      if (worksheet == null)
+        worksheet = CreateNewWorkSheet(spreadsheet, worksheetName);
 
       // Define the URL to request the list feed of the worksheet.
-      var listFeedLink = productsWorksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
+      var listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
       // Fetch the list feed of the worksheet.
       return new ListQuery(listFeedLink.HRef.ToString());
     }
@@ -95,27 +100,56 @@ namespace Google
     /// <returns>Запрос к сервису.</returns>
     public static CellQuery InitializeCellBasedQuery(string spreadsheetName, string worksheetName)
     {
-      if (Service == null)
+      if (SpreadsheetsManager.Service == null)
         return null;
 
-      // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
-      var query = new SpreadsheetQuery();
-
-      var spreadsheet = SpreadsheetsManager.Service.Query(query).Entries
-        .OfType<SpreadsheetEntry>()
-        .Where(e => e.Title.Text == spreadsheetName)
-        .FirstOrDefault();
-
+      var spreadsheet = GetSpreadSheet(spreadsheetName);
       if (spreadsheet == null)
         return null;
 
-      var productsWorksheet = spreadsheet.Worksheets.Entries
+      var worksheet = GetWorkSheet(spreadsheet, worksheetName);
+      if (worksheet == null)
+        worksheet = CreateNewWorkSheet(spreadsheet, worksheetName);
+
+      // Fetch the cell feed of the worksheet.
+      return new CellQuery(worksheet.CellFeedLink);
+    }
+
+    private static SpreadsheetEntry GetSpreadSheet(string spreadsheetName)
+    {
+      // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
+      var query = new SpreadsheetQuery();
+
+      return SpreadsheetsManager.Service.Query(query).Entries
+        .OfType<SpreadsheetEntry>()
+        .Where(e => e.Title.Text == spreadsheetName)
+        .FirstOrDefault();
+    }
+
+    private static WorksheetEntry GetWorkSheet(SpreadsheetEntry spreadsheet, string worksheetName)
+    {
+      return spreadsheet.Worksheets.Entries
         .OfType<WorksheetEntry>()
         .Where(w => w.Title.Text == worksheetName)
         .FirstOrDefault();
+    }
 
-      // Fetch the cell feed of the worksheet.
-      return new CellQuery(productsWorksheet.CellFeedLink);
+    private static WorksheetEntry CreateNewWorkSheet(SpreadsheetEntry spreadsheet, string worksheetName)
+    {
+      // Create a local representation of the new worksheet.
+      var worksheet = new WorksheetEntry();
+      worksheet.Title.Text = worksheetName;
+      worksheet.Cols = DefaultColumnCount;
+      worksheet.Rows = DefaultRowCount;
+
+      // Send the local representation of the worksheet to the API for
+      // creation.  The URL to use here is the worksheet feed URL of our
+      // spreadsheet.
+      WorksheetFeed wsFeed = spreadsheet.Worksheets;
+      SpreadsheetsManager.Service.Insert(wsFeed, worksheet);
+
+      var reloadedSpreadsheet = GetSpreadSheet(spreadsheet.Title.Text);
+      return GetWorkSheet(reloadedSpreadsheet, worksheetName);
     }
   }
 }
