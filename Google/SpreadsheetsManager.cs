@@ -10,7 +10,8 @@ namespace Google
 {
   public class SpreadsheetsManager
   {
-    #region 
+    #region Константы
+
     /// <summary>
     /// Количество столбцов по умолчанию.
     /// </summary>
@@ -23,18 +24,26 @@ namespace Google
 
     #endregion
 
+    #region Поля и свойства
+
     public static SpreadsheetsService Service { get; set; }
+
+    #endregion
 
     /// <summary>
     /// Получить все строки старницы.
     /// </summary>
     /// <param name="spreadsheetName">Имя книги (файла).</param>
     /// <param name="worksheetName">Имя страницы.</param>
+    /// <param name="defaultColumnHeaders">Имена заголовков колонок.</param>
     /// <returns>Все строки страницы.</returns>
-    public static ListFeed GetRows(string spreadsheetName, string worksheetName)
+    public static ListFeed GetRows(string spreadsheetName, string worksheetName, string[] defaultColumnHeaders = null)
     {
       ListQuery listQuery = InitializeListBasedQuery(spreadsheetName, worksheetName);
-      return SpreadsheetsManager.Service.Query(listQuery);
+      var listFeed = SpreadsheetsManager.Service.Query(listQuery);
+      if (listFeed.TotalResults == 0 && defaultColumnHeaders != null)
+        InsertHeaderRow(spreadsheetName, worksheetName, defaultColumnHeaders);
+      return listFeed;
     }
 
     /// <summary>
@@ -55,8 +64,9 @@ namespace Google
     /// <param name="spreadsheetName">Имя книги (файла).</param>
     /// <param name="worksheetName">Имя страницы.</param>
     /// <param name="filter">Фильтр.</param>
+    /// <param name="defaultColumnHeaders">Имена заголовков колонок.</param>
     /// <returns>Все строки страницы по заданному фильтру.</returns>
-    public static ListFeed GetRowsWithFilter(string spreadsheetName, string worksheetName, string filter)
+    public static ListFeed GetRowsWithFilter(string spreadsheetName, string worksheetName, string filter, string[] defaultColumnHeaders = null)
     {
       ListQuery listQuery = InitializeListBasedQuery(spreadsheetName, worksheetName);
       if (!string.IsNullOrEmpty(filter))
@@ -64,7 +74,10 @@ namespace Google
         listQuery.SpreadsheetQuery = filter;
         listQuery.Reverse = true;
       }
-      return SpreadsheetsManager.Service.Query(listQuery);
+      var listFeed = SpreadsheetsManager.Service.Query(listQuery);
+      if (listFeed.TotalResults == 0 && defaultColumnHeaders != null)
+        InsertHeaderRow(spreadsheetName, worksheetName, defaultColumnHeaders);
+      return listFeed;
     }
 
     /// <summary>
@@ -115,6 +128,19 @@ namespace Google
       return new CellQuery(worksheet.CellFeedLink);
     }
 
+    public static void AddNewRow(ListFeed listFeed, IDictionary<string, string> rowValues)
+    {
+      var row = new ListEntry();
+      foreach (var item in rowValues)
+        row.Elements.Add(CreateCell(item));
+      SpreadsheetsManager.Service.Insert(listFeed, row);
+    }
+
+    private static ListEntry.Custom CreateCell(KeyValuePair<string, string> cellValue)
+    {
+      return new ListEntry.Custom() { LocalName = cellValue.Key, Value = cellValue.Value };
+    }
+
     private static SpreadsheetEntry GetSpreadSheet(string spreadsheetName)
     {
       // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
@@ -150,6 +176,24 @@ namespace Google
 
       var reloadedSpreadsheet = GetSpreadSheet(spreadsheet.Title.Text);
       return GetWorkSheet(reloadedSpreadsheet, worksheetName);
+    }
+
+    /// <summary>
+    /// Добавить первую строку на странице (которая в ListBased-нотации считается строкой заголовка).
+    /// </summary>
+    /// <param name="spreadsheetName">Имя книги (файла).</param>
+    /// <param name="worksheetName">Имя страницы.</param>
+    /// <param name="defaultColumnHeaders">Имена заголовков колонок.</param>
+    private static void InsertHeaderRow(string spreadsheetName, string worksheetName, string[] defaultColumnHeaders)
+    {
+      // Добавление первой строки не умеет работать в ListBased-нотации, т.к. первая строка считается заголовком и задает некую структуру страницы.
+      var cellFeed = GetCells(spreadsheetName, worksheetName);
+      for (int i = 1; i <= defaultColumnHeaders.Count(); i++)
+      {
+        // Отсчет идет от 1, т.к. номера ячеек начинаются от 1.
+        var cellEntry = new CellEntry(1, (uint)i, defaultColumnHeaders[i - 1]);
+        cellFeed.Insert(cellEntry);
+      }
     }
   }
 }

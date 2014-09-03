@@ -14,6 +14,14 @@ namespace FoodDiary
 {
   public class GooglePortionStorage : IPortionStorage
   {
+    #region Поля и свойства
+
+    private static readonly string[] DefaultColumnHeaders = new string[]
+    {
+      "Date", "Product", "Weight", "Protein", "Carbohydrate", "Fat", "CalValue",
+      "CalResult", "ProteinResult", "CarbohydrateResult", "FatResult"
+    };
+
     /// <summary>
     /// Имя файла.
     /// </summary>
@@ -33,6 +41,8 @@ namespace FoodDiary
     /// Имя листа с рационом за текущий месяц.
     /// </summary>
     private readonly string CurrentMonthWorkSheetName = string.Join("-", MonthWorkSheetName, CurrentMonthNumber);
+
+    #endregion
 
     public void SaveDailyPortion(DailyPortion dailyPortion)
     {
@@ -139,7 +149,7 @@ namespace FoodDiary
 
     public DailyPortion GetCurrentDailyPortion()
     {
-      ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, CurrentMonthWorkSheetName);
+      ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, CurrentMonthWorkSheetName, DefaultColumnHeaders);
       if (listFeed == null)
         return null;
 
