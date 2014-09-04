@@ -35,7 +35,7 @@
         <Binding Path="CalValue"
                UpdateSourceTrigger="PropertyChanged">
           <Binding.ValidationRules>
-            <r:IntRangeValidationRule />
+            <r:FloatRangeValidationRule />
           </Binding.ValidationRules>
         </Binding>
       </TextBox.Text>
@@ -47,7 +47,7 @@
         <Binding Path="Protein"
                  UpdateSourceTrigger="PropertyChanged">
           <Binding.ValidationRules>
-            <r:IntRangeValidationRule />
+            <r:FloatRangeValidationRule />
           </Binding.ValidationRules>
         </Binding>
       </TextBox.Text>
@@ -59,7 +59,7 @@
         <Binding Path="Fat"
                  UpdateSourceTrigger="PropertyChanged">
           <Binding.ValidationRules>
-            <r:IntRangeValidationRule />
+            <r:FloatRangeValidationRule />
           </Binding.ValidationRules>
         </Binding>
       </TextBox.Text>
@@ -71,7 +71,7 @@
         <Binding Path="Carbohydrate"
                  UpdateSourceTrigger="PropertyChanged">
           <Binding.ValidationRules>
-            <r:IntRangeValidationRule />
+            <r:FloatRangeValidationRule />
           </Binding.ValidationRules>
         </Binding>
       </TextBox.Text>

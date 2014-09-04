@@ -5,21 +5,21 @@ using System.Windows.Controls;
 namespace FoodDiary
 {
   /// <summary>
-  /// Правило валидации на проверку вхождения в заданный интервал целых чисел.
+  /// Правило валидации на проверку вхождения в заданный интервал чисел.
   /// </summary>
-  public class IntRangeValidationRule : ValidationRule
+  public class FloatRangeValidationRule : ValidationRule
   {
     #region Константы
 
     /// <summary>
     /// Значение по умолчанию для минимального значения.
     /// </summary>
-    public const int DefaultMinValue = 0;
+    public const float DefaultMinValue = 0;
 
     /// <summary>
     /// Значение по умолчанию для максимального значения.
     /// </summary>
-    public const int DefaultMaxValue = 1000;
+    public const float DefaultMaxValue = 1000;
 
     #endregion
 
@@ -28,12 +28,12 @@ namespace FoodDiary
     /// <summary>
     /// Минимальное значение.
     /// </summary>
-    public int MinValue { get; set; }
+    public float MinValue { get; set; }
 
     /// <summary>
     /// Максимальное значение.
     /// </summary>
-    public int MaxValue { get; set; }
+    public float MaxValue { get; set; }
 
     #endregion
 
@@ -41,12 +41,12 @@ namespace FoodDiary
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-      int convertedValue = 0;
+      float convertedValue = 0;
 
       try
       {
         if (((string)value).Length > 0)
-          convertedValue = Int32.Parse((String)value);
+          convertedValue = float.Parse((String)value, CultureInfo.InvariantCulture.NumberFormat);
       }
       catch
       {
@@ -63,7 +63,7 @@ namespace FoodDiary
 
     #region Конструкторы
 
-    public IntRangeValidationRule()
+    public FloatRangeValidationRule()
     {
       this.MinValue = DefaultMinValue;
       this.MaxValue = DefaultMaxValue;

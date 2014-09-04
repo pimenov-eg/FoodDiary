@@ -55,7 +55,7 @@
           <Binding Path="SelectedProductWeight"
                    UpdateSourceTrigger="PropertyChanged">
             <Binding.ValidationRules>
-              <r:IntRangeValidationRule />
+              <r:FloatRangeValidationRule />
             </Binding.ValidationRules>
           </Binding>
         </TextBox.Text>
