@@ -5,7 +5,7 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/ReuxablesLegacy;component/Mercury.xaml" />
+        <!--<ResourceDictionary Source="/ReuxablesLegacy;component/Mercury.xaml" />-->
         <ResourceDictionary Source="pack://application:,,/ControlStyles.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
