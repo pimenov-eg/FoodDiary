@@ -32,10 +32,26 @@ namespace Google
         this.PresenterClosed(this, EventArgs.Empty);
     }
 
-    private void Authorize()
+    private void Authorize(object parameter)
     {
       GoogleAuthorizationManager.InitializeSpreadsheetsService(GoogleAuthorizationManager.AuthorizationParameters, this.AccessCode);
       this.OnPresenterClosed();
+    }
+
+
+    public AuthorizationPresenter()
+    {
+      _deleteCustomerCommand = new DelegateCommand(DeleteCustomer, CanDeleteCustomer);
+    }
+    private readonly ICommand _deleteCustomerCommand;
+    private bool CanDeleteCustomer(object state)
+    {
+      return true;
+    }
+
+    private void DeleteCustomer(object state)
+    {
+      
     }
   }
 }

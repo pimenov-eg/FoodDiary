@@ -115,7 +115,7 @@ namespace FoodDiary.ViewModel
 
     public ICommand AddToDailyPortionCommand { get { return new DelegateCommand(this.AddToDailyPortion); } }
 
-    private void AddToDailyPortion()
+    private void AddToDailyPortion(object parameter)
     {
       var oneTimePortion = new OneTimePortion
       {
@@ -127,7 +127,7 @@ namespace FoodDiary.ViewModel
 
     public ICommand RemoveFromDailyPortionCommand { get { return new DelegateCommand(this.RemoveFromDailyPortion); } }
 
-    private void RemoveFromDailyPortion()
+    private void RemoveFromDailyPortion(object parameter)
     {
       this.DailyPortion.Remove(this.SelectedOneTimePortion);
     }
@@ -138,7 +138,7 @@ namespace FoodDiary.ViewModel
 
     public ICommand AddProductCommand { get { return new DelegateCommand(this.AddProduct); } }
 
-    private void AddProduct()
+    private void AddProduct(object parameter)
     {
       new AddProductWindow().ShowDialog();
     }
@@ -161,7 +161,7 @@ namespace FoodDiary.ViewModel
 
     public ICommand TestCommand { get { return new DelegateCommand(this.Test); } }
 
-    private void Test()
+    private void Test(object parameter)
     {
       
     }
@@ -172,7 +172,7 @@ namespace FoodDiary.ViewModel
 
     public ICommand SaveDailyPortionCommand { get { return new DelegateCommand(this.SaveDailyPortion); } }
 
-    private void SaveDailyPortion()
+    private void SaveDailyPortion(object parameter)
     {
       var dailyPortion = new DailyPortion
       {

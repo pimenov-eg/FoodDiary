@@ -21,13 +21,10 @@
     </Grid.RowDefinitions>
 
     <TextBlock Grid.Column="0" Grid.Row="0" Text="Название" />
-    <TextBox Grid.Column="1" Grid.Row="0" Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}">
+    <TextBox Grid.Column="1" Grid.Row="0">
       <TextBox.Text>
         <Binding Path="Name"
-                 UpdateSourceTrigger="PropertyChanged">
-          <Binding.ValidationRules>
-            <r:FillingStringValidationRule />
-          </Binding.ValidationRules>
+                 UpdateSourceTrigger="LostFocus">
         </Binding>
       </TextBox.Text>
     </TextBox>

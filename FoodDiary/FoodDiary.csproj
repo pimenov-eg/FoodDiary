@@ -80,7 +80,6 @@
     <Compile Include="Model\OneTimePortion.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="ProductCache.cs" />
-    <Compile Include="ValidationRules\FillingStringValidationRule.cs" />
     <Compile Include="ValidationRules\IntRangeValidationRule.cs" />
     <Compile Include="ViewModel\AddProductPresenter.cs" />
     <Compile Include="ViewModel\FoodDiaryPresenter.cs" />

@@ -101,9 +101,9 @@ namespace FoodDiary.ViewModel
 
     #region Команда добавления нового продукта
 
-    public ICommand AddProductCommand { get { return new DelegateCommand(this.AddProduct); } }
+    public ICommand AddProductCommand { get { return new DelegateCommand(this.AddProduct, this.CanAddProduct); } }
 
-    private void AddProduct()
+    private void AddProduct(object parameter)
     {
       // посмотреть преобразование типов (в каком типе писать в google - в строке или числом)
       var product = new Product
@@ -115,6 +115,11 @@ namespace FoodDiary.ViewModel
         Fat = this.Fat
       };
       this.productStorage.AddProduct(product);
+    }
+
+    private bool CanAddProduct(object parameter)
+    {
+      return !string.IsNullOrWhiteSpace(this.Name);
     }
 
     #endregion

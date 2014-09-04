@@ -1,13 +1,13 @@
-﻿using Google.GData.Client;
-using Google.GData.Spreadsheets;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Google.GData.Client;
+using Google.GData.Spreadsheets;
 
 namespace Google
 {
+  /// <summary>
+  /// Менеджер для работы с Google Spreadsheet.
+  /// </summary>
   public class SpreadsheetsManager
   {
     #region Константы
@@ -26,9 +26,14 @@ namespace Google
 
     #region Поля и свойства
 
+    /// <summary>
+    /// Экземпляр сервиса Google Spreadsheet.
+    /// </summary>
     public static SpreadsheetsService Service { get; set; }
 
     #endregion
+
+    #region Методы
 
     /// <summary>
     /// Получить все строки старницы.
@@ -40,7 +45,7 @@ namespace Google
     public static ListFeed GetRows(string spreadsheetName, string worksheetName, string[] defaultColumnHeaders = null)
     {
       ListQuery listQuery = InitializeListBasedQuery(spreadsheetName, worksheetName);
-      var listFeed = SpreadsheetsManager.Service.Query(listQuery);
+      var listFeed = Service.Query(listQuery);
       if (listFeed.TotalResults == 0 && defaultColumnHeaders != null)
         InsertHeaderRow(spreadsheetName, worksheetName, defaultColumnHeaders);
       return listFeed;
@@ -55,7 +60,7 @@ namespace Google
     public static CellFeed GetCells(string spreadsheetName, string worksheetName)
     {
       CellQuery cellQuery = InitializeCellBasedQuery(spreadsheetName, worksheetName);
-      return SpreadsheetsManager.Service.Query(cellQuery);
+      return Service.Query(cellQuery);
     }
 
     /// <summary>
@@ -70,50 +75,65 @@ namespace Google
     {
       ListQuery listQuery = InitializeListBasedQuery(spreadsheetName, worksheetName);
       if (!string.IsNullOrEmpty(filter))
-      { 
+      {
         listQuery.SpreadsheetQuery = filter;
         listQuery.Reverse = true;
       }
-      var listFeed = SpreadsheetsManager.Service.Query(listQuery);
+      var listFeed = Service.Query(listQuery);
       if (listFeed.TotalResults == 0 && defaultColumnHeaders != null)
         InsertHeaderRow(spreadsheetName, worksheetName, defaultColumnHeaders);
       return listFeed;
     }
 
     /// <summary>
-    /// Инициализировать запрос к сервису.
+    /// Инициализировать ListQuery запрос к сервису Google Spreadsheet.
     /// </summary>
     /// <param name="spreadsheetName">Имя книги (файла).</param>
     /// <param name="worksheetName">Имя страницы.</param>
     /// <returns>Запрос к сервису.</returns>
-    private static ListQuery InitializeListBasedQuery(string spreadsheetName, string worksheetName)
+    public static ListQuery InitializeListBasedQuery(string spreadsheetName, string worksheetName)
     {
-      if (SpreadsheetsManager.Service == null)
-        return null;
-
-      var spreadsheet = GetSpreadSheet(spreadsheetName);
-      if (spreadsheet == null)
-        return null;
-
-      var worksheet = GetWorkSheet(spreadsheet, worksheetName);
-      if (worksheet == null)
-        worksheet = CreateNewWorkSheet(spreadsheet, worksheetName);
-
-      // Define the URL to request the list feed of the worksheet.
+      var worksheet = GetWorksheet(spreadsheetName, worksheetName);
       var listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
-      // Fetch the list feed of the worksheet.
       return new ListQuery(listFeedLink.HRef.ToString());
     }
 
     /// <summary>
-    /// Инициализировать запрос к сервису.
+    /// Инициализировать CellQuery запрос к сервису Google Spreadsheet.
     /// </summary>
     /// <param name="spreadsheetName">Имя книги (файла).</param>
     /// <param name="worksheetName">Имя страницы.</param>
     /// <returns>Запрос к сервису.</returns>
     public static CellQuery InitializeCellBasedQuery(string spreadsheetName, string worksheetName)
     {
-      if (SpreadsheetsManager.Service == null)
+      var worksheet = GetWorksheet(spreadsheetName, worksheetName);
+      return new CellQuery(worksheet.CellFeedLink);
+    }
+
+    /// <summary>
+    /// Получить книгу (файл) по заданному имени.
+    /// </summary>
+    /// <param name="spreadsheetName">Имя книги (файла).</param>
+    /// <returns>Книга (файл).</returns>
+    private static SpreadsheetEntry GetSpreadSheet(string spreadsheetName)
+    {
+      var query = new SpreadsheetQuery();
+
+      return Service.Query(query).Entries
+        .OfType<SpreadsheetEntry>()
+        .Where(e => e.Title.Text == spreadsheetName)
+        .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Получить (либо создать новую) страницу из заданной книги с заданным именем страницы.
+    /// </summary>
+    /// <param name="spreadsheetName">Имя книги (файла).</param>
+    /// <param name="worksheetName">Имя страницы.</param>
+    /// <returns>Страница.</returns>
+    private static WorksheetEntry GetWorksheet(string spreadsheetName, string worksheetName)
+    {
+      if (Service == null)
         return null;
 
       var spreadsheet = GetSpreadSheet(spreadsheetName);
@@ -123,35 +143,15 @@ namespace Google
       var worksheet = GetWorkSheet(spreadsheet, worksheetName);
       if (worksheet == null)
         worksheet = CreateNewWorkSheet(spreadsheet, worksheetName);
-
-      // Fetch the cell feed of the worksheet.
-      return new CellQuery(worksheet.CellFeedLink);
+      return worksheet;
     }
 
-    public static void AddNewRow(ListFeed listFeed, IDictionary<string, string> rowValues)
-    {
-      var row = new ListEntry();
-      foreach (var item in rowValues)
-        row.Elements.Add(CreateCell(item));
-      SpreadsheetsManager.Service.Insert(listFeed, row);
-    }
-
-    private static ListEntry.Custom CreateCell(KeyValuePair<string, string> cellValue)
-    {
-      return new ListEntry.Custom() { LocalName = cellValue.Key, Value = cellValue.Value };
-    }
-
-    private static SpreadsheetEntry GetSpreadSheet(string spreadsheetName)
-    {
-      // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
-      var query = new SpreadsheetQuery();
-
-      return SpreadsheetsManager.Service.Query(query).Entries
-        .OfType<SpreadsheetEntry>()
-        .Where(e => e.Title.Text == spreadsheetName)
-        .FirstOrDefault();
-    }
-
+    /// <summary>
+    /// Получить страницу по заданной книге и имени страницы.
+    /// </summary>
+    /// <param name="spreadsheet">Книга (файл).</param>
+    /// <param name="worksheetName">Имя страницы.</param>
+    /// <returns>Страница.</returns>
     private static WorksheetEntry GetWorkSheet(SpreadsheetEntry spreadsheet, string worksheetName)
     {
       return spreadsheet.Worksheets.Entries
@@ -160,20 +160,25 @@ namespace Google
         .FirstOrDefault();
     }
 
+    /// <summary>
+    /// Создать новую страницу.
+    /// </summary>
+    /// <param name="spreadsheet">Книга (файл).</param>
+    /// <param name="worksheetName">Имя страницы.</param>
+    /// <returns></returns>
     private static WorksheetEntry CreateNewWorkSheet(SpreadsheetEntry spreadsheet, string worksheetName)
     {
-      // Create a local representation of the new worksheet.
-      var worksheet = new WorksheetEntry();
+      var worksheet = new WorksheetEntry
+      {
+        Cols = DefaultColumnCount,
+        Rows = DefaultRowCount
+      };
       worksheet.Title.Text = worksheetName;
-      worksheet.Cols = DefaultColumnCount;
-      worksheet.Rows = DefaultRowCount;
 
-      // Send the local representation of the worksheet to the API for
-      // creation.  The URL to use here is the worksheet feed URL of our
-      // spreadsheet.
-      WorksheetFeed wsFeed = spreadsheet.Worksheets;
-      SpreadsheetsManager.Service.Insert(wsFeed, worksheet);
+      WorksheetFeed worksheetFeed = spreadsheet.Worksheets;
+      Service.Insert(worksheetFeed, worksheet);
 
+      // переполучаем новую страницу.
       var reloadedSpreadsheet = GetSpreadSheet(spreadsheet.Title.Text);
       return GetWorkSheet(reloadedSpreadsheet, worksheetName);
     }
@@ -195,5 +200,30 @@ namespace Google
         cellFeed.Insert(cellEntry);
       }
     }
+
+    /// <summary>
+    /// Добавить новую строку (не первую) в страницу.
+    /// </summary>
+    /// <param name="listFeed">Строки страницы.</param>
+    /// <param name="rowValues">Значения строки (key - заголовок столбца, value - значение ячейки).</param>
+    public static void AddNewRow(ListFeed listFeed, IDictionary<string, string> rowValues)
+    {
+      var row = new ListEntry();
+      foreach (var item in rowValues)
+        row.Elements.Add(CreateCell(item));
+      Service.Insert(listFeed, row);
+    }
+
+    /// <summary>
+    /// Создать ячейку.
+    /// </summary>
+    /// <param name="cellValue">Значение ячейки (key - заголовок столбца, value - значение ячейки)</param>
+    /// <returns>Ячейка.</returns>
+    private static ListEntry.Custom CreateCell(KeyValuePair<string, string> cellValue)
+    {
+      return new ListEntry.Custom() { LocalName = cellValue.Key, Value = cellValue.Value };
+    }
+
+    #endregion
   }
 }
