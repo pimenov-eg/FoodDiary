@@ -1,21 +1,25 @@
-﻿using FoodDiary.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using FoodDiary.Interfaces;
 using FoodDiary.Model;
 using Google;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodDiary
 {
+  /// <summary>
+  /// Хранилище рациона в Google Spreadsheet.
+  /// </summary>
   public class GooglePortionStorage : IPortionStorage
   {
     #region Поля и свойства
 
+    /// <summary>
+    /// Заголовки колонок по умолчанию.
+    /// </summary>
     private static readonly string[] DefaultColumnHeaders = new string[]
     {
       "Date", "Product", "Weight", "Protein", "Carbohydrate", "Fat", "CalValue",
@@ -44,6 +48,12 @@ namespace FoodDiary
 
     #endregion
 
+    #region Методы
+
+    /// <summary>
+    /// Сохранить дневной рацион.
+    /// </summary>
+    /// <param name="dailyPortion">Дневной рацион.</param>
     public void SaveDailyPortion(DailyPortion dailyPortion)
     {
       ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, CurrentMonthWorkSheetName);
@@ -79,6 +89,7 @@ namespace FoodDiary
     /// </summary>
     private void DeleteCurrentDailyPortion()
     {
+      // Удаление через ListBased-нотацию работает криво, т.к. после каждого удаления обновляется коллекция и следующее удаление "пропускает" одну запись.
       CellQuery cellQuery = SpreadsheetsManager.InitializeCellBasedQuery(SpreadSheetName, CurrentMonthWorkSheetName);
       CellFeed cellFeed = SpreadsheetsManager.Service.Query(cellQuery);
 
@@ -94,7 +105,6 @@ namespace FoodDiary
         batchRequest.Entries.Add(cell);
       }
 
-      // Submit the update
       CellFeed batchResponse = (CellFeed)SpreadsheetsManager.Service.Batch(batchRequest, new Uri(cellFeed.Batch));
     }
 
@@ -118,35 +128,41 @@ namespace FoodDiary
         }
       });
 
-      ListEntry row;
       foreach (var oneTimePortion in collapsedEatingProducts)
       {
-        row = new ListEntry();
         var totalProtein = (oneTimePortion.Product.Protein / 100) * oneTimePortion.Weight;
         var totalCarbohydrate = (oneTimePortion.Product.Carbohydrate / 100) * oneTimePortion.Weight;
         var totalFat = (oneTimePortion.Product.Fat / 100) * oneTimePortion.Weight;
         var totalCalValue = (oneTimePortion.Product.CalValue / 100) * oneTimePortion.Weight;
 
-        row.Elements.Add(new ListEntry.Custom { LocalName = "date", Value = dailyPortion.Date });
-        row.Elements.Add(new ListEntry.Custom { LocalName = "product", Value = oneTimePortion.Product.Name });
-        row.Elements.Add(new ListEntry.Custom { LocalName = "weight", Value = oneTimePortion.Weight.ToString("N") });
-        row.Elements.Add(new ListEntry.Custom { LocalName = "protein", Value = totalProtein.ToString("N") });
-        row.Elements.Add(new ListEntry.Custom { LocalName = "carbohydrate", Value = totalCarbohydrate.ToString("N") });
-        row.Elements.Add(new ListEntry.Custom { LocalName = "fat", Value = totalFat.ToString("N") });
-        row.Elements.Add(new ListEntry.Custom { LocalName = "calvalue", Value = totalCalValue.ToString("N") });
-
-        SpreadsheetsManager.Service.Insert(listFeed, row);
+        var rowValue = new Dictionary<string, string>
+        {
+          {"date", dailyPortion.Date},
+          {"product", oneTimePortion.Product.Name},
+          {"weight", oneTimePortion.Weight.ToString("N", CultureInfo.InvariantCulture)},
+          {"protein", totalProtein.ToString("N", CultureInfo.InvariantCulture)},
+          {"carbohydrate", totalCarbohydrate.ToString("N", CultureInfo.InvariantCulture)},
+          {"fat", totalFat.ToString("N", CultureInfo.InvariantCulture)},
+          {"calvalue", totalCalValue.ToString("N", CultureInfo.InvariantCulture)}
+        };
+        SpreadsheetsManager.AddNewRow(listFeed, rowValue);
       }
 
-      row = new ListEntry();
-      row.Elements.Add(new ListEntry.Custom { LocalName = "date", Value = dailyPortion.Date });
-      row.Elements.Add(new ListEntry.Custom { LocalName = "calresult", Value = dailyPortion.TotalCalValue.ToString("N") });
-      row.Elements.Add(new ListEntry.Custom { LocalName = "proteinresult", Value = dailyPortion.TotalProteinValue.ToString("N") });
-      row.Elements.Add(new ListEntry.Custom { LocalName = "carbohydrateresult", Value = dailyPortion.TotalCarbohydrateValue.ToString("N") });
-      row.Elements.Add(new ListEntry.Custom { LocalName = "fatresult", Value = dailyPortion.TotalFatValue.ToString("N") });
-      SpreadsheetsManager.Service.Insert(listFeed, row);
+      var resultRowValue = new Dictionary<string, string>
+      {
+        {"date", dailyPortion.Date},
+        {"calresult", dailyPortion.TotalCalValue.ToString("N", CultureInfo.InvariantCulture)},
+        {"proteinresult", dailyPortion.TotalProteinValue.ToString("N", CultureInfo.InvariantCulture)},
+        {"carbohydrateresult", dailyPortion.TotalCarbohydrateValue.ToString("N", CultureInfo.InvariantCulture)},
+        {"fatresult", dailyPortion.TotalFatValue.ToString("N", CultureInfo.InvariantCulture)}
+      };
+      SpreadsheetsManager.AddNewRow(listFeed, resultRowValue);
     }
 
+    /// <summary>
+    /// Получить текущий дневной рацион.
+    /// </summary>
+    /// <returns>Дневной рацион.</returns>
     public DailyPortion GetCurrentDailyPortion()
     {
       ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, CurrentMonthWorkSheetName, DefaultColumnHeaders);
@@ -199,5 +215,7 @@ namespace FoodDiary
       }
       return currentDailyPortion;
     }
+
+    #endregion
   }
 }

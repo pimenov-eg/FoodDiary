@@ -1,13 +1,21 @@
-﻿using SimpleMVVM;
-using System;
+﻿using System;
 using System.Windows.Input;
+using SimpleMVVM;
 
 namespace Google
 {
+  /// <summary>
+  /// Презентер авторизации в Google.
+  /// </summary>
   public class AuthorizationPresenter : ObservableObject
   {
+    #region Поля и свойства
+
     private string accessCode;
 
+    /// <summary>
+    /// Код доступа.
+    /// </summary>
     public string AccessCode
     {
       get
@@ -22,13 +30,25 @@ namespace Google
       }
     }
 
+    #endregion
+
+    #region Методы
+
+    /// <summary>
+    /// Событие на закрытие презентера.
+    /// </summary>
     public event EventHandler PresenterClosed;
 
+    /// <summary>
+    /// Генерация события на закрытие презентера.
+    /// </summary>
     public void OnPresenterClosed()
     {
       if (this.PresenterClosed != null)
         this.PresenterClosed(this, EventArgs.Empty);
     }
+
+    #endregion
 
     #region Команда авторизации на сервисе Google Spreadsheet
 

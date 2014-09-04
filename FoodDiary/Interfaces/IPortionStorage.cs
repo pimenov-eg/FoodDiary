@@ -1,16 +1,22 @@
 ﻿using FoodDiary.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodDiary.Interfaces
 {
+  /// <summary>
+  /// Интерфейс хранилища дневного рациона.
+  /// </summary>
   public interface IPortionStorage
   {
+    /// <summary>
+    /// Сохранить дневной рацион.
+    /// </summary>
+    /// <param name="dailyPortion">Дневной рацион.</param>
     void SaveDailyPortion(DailyPortion dailyPortion);
 
+    /// <summary>
+    /// Получить текущий дневной рацион.
+    /// </summary>
+    /// <returns></returns>
     DailyPortion GetCurrentDailyPortion();
   }
 }

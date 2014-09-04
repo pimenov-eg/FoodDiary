@@ -111,6 +111,19 @@ namespace Google
     }
 
     /// <summary>
+    /// Добавить новую строку (не первую) в страницу.
+    /// </summary>
+    /// <param name="listFeed">Строки страницы.</param>
+    /// <param name="rowValues">Значения строки (key - заголовок столбца, value - значение ячейки).</param>
+    public static void AddNewRow(ListFeed listFeed, IDictionary<string, string> rowValues)
+    {
+      var row = new ListEntry();
+      foreach (var item in rowValues)
+        row.Elements.Add(CreateCell(item));
+      Service.Insert(listFeed, row);
+    }
+
+    /// <summary>
     /// Получить книгу (файл) по заданному имени.
     /// </summary>
     /// <param name="spreadsheetName">Имя книги (файла).</param>
@@ -199,19 +212,6 @@ namespace Google
         var cellEntry = new CellEntry(1, (uint)i, defaultColumnHeaders[i - 1]);
         cellFeed.Insert(cellEntry);
       }
-    }
-
-    /// <summary>
-    /// Добавить новую строку (не первую) в страницу.
-    /// </summary>
-    /// <param name="listFeed">Строки страницы.</param>
-    /// <param name="rowValues">Значения строки (key - заголовок столбца, value - значение ячейки).</param>
-    public static void AddNewRow(ListFeed listFeed, IDictionary<string, string> rowValues)
-    {
-      var row = new ListEntry();
-      foreach (var item in rowValues)
-        row.Elements.Add(CreateCell(item));
-      Service.Insert(listFeed, row);
     }
 
     /// <summary>

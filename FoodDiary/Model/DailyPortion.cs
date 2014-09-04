@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace FoodDiary.Model
@@ -9,6 +8,8 @@ namespace FoodDiary.Model
   /// </summary>
   public class DailyPortion
   {
+    #region Поля и свойства
+
     /// <summary>
     /// Дата.
     /// </summary>
@@ -39,9 +40,15 @@ namespace FoodDiary.Model
     /// </summary>
     public float TotalFatValue { get { return this.AllEatingProducts.Sum(p => (p.Product.Fat / 100) * p.Weight); } }
 
+    #endregion
+
+    #region Конструкторы
+
     public DailyPortion()
     {
       this.AllEatingProducts = new List<OneTimePortion>();
     }
+
+    #endregion
   }
 }

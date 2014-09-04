@@ -5,6 +5,8 @@
   /// </summary>
   public class OneTimePortion
   {
+    #region Поля и свойства
+
     /// <summary>
     /// Продукт.
     /// </summary>
@@ -15,9 +17,15 @@
     /// </summary>
     public float Weight { get; set; }
 
+    #endregion
+
+    #region Методы
+
     public override string ToString()
     {
       return string.Format("{0}, {1} гр.", this.Product.Name, this.Weight);
     }
+
+    #endregion
   }
 }

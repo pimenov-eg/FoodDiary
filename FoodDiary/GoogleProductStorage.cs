@@ -1,17 +1,19 @@
-﻿using FoodDiary.Interfaces;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using FoodDiary.Interfaces;
 using FoodDiary.Model;
 using Google;
-using Google.GData.Client;
 using Google.GData.Spreadsheets;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 namespace FoodDiary
 {
+  /// <summary>
+  /// Хранилище продуктов в Google Spreadsheet.
+  /// </summary>
   public class GoogleProductStorage : IProductStorage
   {
+    #region Поля и свойства
+
     /// <summary>
     /// Имя файла.
     /// </summary>
@@ -22,13 +24,21 @@ namespace FoodDiary
     /// </summary>
     private static readonly string ProductsWorkSheetName = FoodDiary.Properties.Settings.Default.ProductsWorkSheetName;
 
+    #endregion
+
+    #region Методы
+
+    /// <summary>
+    /// Получить все продукты.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<Product> GetAllProducts()
     {
       ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, ProductsWorkSheetName);
       if (listFeed == null)
         return null;
 
-      List<Product> allProducts = new List<Product>();
+      var allProducts = new List<Product>();
       foreach (ListEntry row in listFeed.Entries)
       {
         var product = new Product();
@@ -63,20 +73,27 @@ namespace FoodDiary
       return allProducts;
     }
 
+    /// <summary>
+    /// Добавить продукт в хранилище.
+    /// </summary>
+    /// <param name="product">Продукт.</param>
     public void AddProduct(Product product)
     {
       ListFeed listFeed = SpreadsheetsManager.GetRows(SpreadSheetName, ProductsWorkSheetName);
       if (listFeed == null)
         return;
 
-      var row = new ListEntry();
-      row.Elements.Add(new ListEntry.Custom() { LocalName = "product", Value = product.Name });
-      row.Elements.Add(new ListEntry.Custom() { LocalName = "calvalue", Value = product.CalValue.ToString() });
-      row.Elements.Add(new ListEntry.Custom() { LocalName = "protein", Value = product.Protein.ToString() });
-      row.Elements.Add(new ListEntry.Custom() { LocalName = "carbohydrate", Value = product.Carbohydrate.ToString() });
-      row.Elements.Add(new ListEntry.Custom() { LocalName = "fat", Value = product.Fat.ToString() });
-
-      SpreadsheetsManager.Service.Insert(listFeed, row);
+      var rowValue = new Dictionary<string, string>
+      {
+        {"product", product.Name},
+        {"calvalue", product.CalValue.ToString("N", CultureInfo.InvariantCulture)},
+        {"protein", product.Protein.ToString("N", CultureInfo.InvariantCulture)},
+        {"carbohydrate", product.Carbohydrate.ToString("N", CultureInfo.InvariantCulture)},
+        {"fat", product.Fat.ToString("N", CultureInfo.InvariantCulture)}
+      };
+      SpreadsheetsManager.AddNewRow(listFeed, rowValue);
     }
+
+    #endregion
   }
 }

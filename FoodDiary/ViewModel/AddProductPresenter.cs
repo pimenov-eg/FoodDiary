@@ -1,26 +1,28 @@
-﻿using FoodDiary.Interfaces;
-using FoodDiary.Model;
-using Google;
-using Google.GData.Client;
-using SimpleMVVM;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows.Input;
-using Google.GData.Spreadsheets;
-using System.Globalization;
+using FoodDiary.Interfaces;
+using FoodDiary.Model;
+using SimpleMVVM;
 
 namespace FoodDiary.ViewModel
 {
+  /// <summary>
+  /// Презентер окна, добавления нового продукта.
+  /// </summary>
   public class AddProductPresenter : ObservableObject
   {
+    #region Поля и свойства
+
+    /// <summary>
+    /// Хранилище продуктов.
+    /// </summary>
     private readonly IProductStorage productStorage = new GoogleProductStorage();
 
     private string name;
 
+    /// <summary>
+    /// Название продукта.
+    /// </summary>
     public string Name
     {
       get
@@ -31,13 +33,16 @@ namespace FoodDiary.ViewModel
       set
       {
         this.name = value;
-        RaisePropertyChangedEvent("Name");
+        this.RaisePropertyChangedEvent("Name");
       }
     }
 
-    private float calValue;
+    private string calValue;
 
-    public float CalValue
+    /// <summary>
+    /// Значение калорийности продукта.
+    /// </summary>
+    public string CalValue
     {
       get
       {
@@ -47,13 +52,16 @@ namespace FoodDiary.ViewModel
       set
       {
         this.calValue = value;
-        RaisePropertyChangedEvent("CalValue");
+        this.RaisePropertyChangedEvent("CalValue");
       }
     }
 
-    private float protein;
+    private string protein;
 
-    public float Protein
+    /// <summary>
+    /// Количество белков в граммах.
+    /// </summary>
+    public string Protein
     {
       get
       {
@@ -63,13 +71,16 @@ namespace FoodDiary.ViewModel
       set
       {
         this.protein = value;
-        RaisePropertyChangedEvent("Protein");
+        this.RaisePropertyChangedEvent("Protein");
       }
     }
 
-    private float carbohydrate;
+    private string carbohydrate;
 
-    public float Carbohydrate
+    /// <summary>
+    /// Количество углеводов в граммах.
+    /// </summary>
+    public string Carbohydrate
     {
       get
       {
@@ -79,13 +90,16 @@ namespace FoodDiary.ViewModel
       set
       {
         this.carbohydrate = value;
-        RaisePropertyChangedEvent("Carbohydrate");
+        this.RaisePropertyChangedEvent("Carbohydrate");
       }
     }
 
-    private float fat;
+    private string fat;
 
-    public float Fat
+    /// <summary>
+    /// Количество жира в граммах.
+    /// </summary>
+    public string Fat
     {
       get
       {
@@ -95,9 +109,11 @@ namespace FoodDiary.ViewModel
       set
       {
         this.fat = value;
-        RaisePropertyChangedEvent("Fat");
+        this.RaisePropertyChangedEvent("Fat");
       }
     }
+
+    #endregion
 
     #region Команда добавления нового продукта
 
@@ -105,23 +121,26 @@ namespace FoodDiary.ViewModel
 
     private void AddProduct(object parameter)
     {
-      // посмотреть преобразование типов (в каком типе писать в google - в строке или числом)
       var product = new Product
       {
         Name = this.Name,
-        CalValue = this.CalValue,
-        Protein = this.Protein,
-        Carbohydrate = this.Carbohydrate,
-        Fat = this.Fat
+        CalValue = this.CalValue != null ? float.Parse(this.CalValue, CultureInfo.InvariantCulture.NumberFormat) : 0,
+        Protein = this.Protein != null ? float.Parse(this.Protein, CultureInfo.InvariantCulture.NumberFormat) : 0,
+        Carbohydrate = this.Carbohydrate != null ? float.Parse(this.Carbohydrate, CultureInfo.InvariantCulture.NumberFormat) :0,
+        Fat = this.Fat != null ? float.Parse(this.Fat, CultureInfo.InvariantCulture.NumberFormat) : 0
       };
       this.productStorage.AddProduct(product);
     }
 
     private bool CanAddProduct(object parameter)
     {
-      return !string.IsNullOrWhiteSpace(this.Name)
-        && this.CalValue != 0 &&
-        (this.Protein != 0 || this.Carbohydrate != 0 || this.Fat != 0);
+      return !string.IsNullOrWhiteSpace(this.Name) &&
+        (!string.IsNullOrWhiteSpace(this.CalValue) && float.Parse(this.CalValue, CultureInfo.InvariantCulture.NumberFormat) != 0) &&
+        (
+          (!string.IsNullOrWhiteSpace(this.Protein) && float.Parse(this.Protein, CultureInfo.InvariantCulture.NumberFormat) != 0) ||
+          (!string.IsNullOrWhiteSpace(this.Carbohydrate) && float.Parse(this.Carbohydrate, CultureInfo.InvariantCulture.NumberFormat) != 0) ||
+          (!string.IsNullOrWhiteSpace(this.Fat) && float.Parse(this.Fat, CultureInfo.InvariantCulture.NumberFormat) != 0)
+        );
     }
 
     #endregion

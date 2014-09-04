@@ -5,6 +5,8 @@
   /// </summary>
   public class Product
   {
+    #region Поля и свойства
+
     /// <summary>
     /// Наименование продукта.
     /// </summary>
@@ -30,9 +32,15 @@
     /// </summary>
     public float Fat { get; set; }
 
+    #endregion
+
+    #region Методы
+
     public override string ToString()
     {
       return string.Format("{0}, {1} ккал", this.Name, this.CalValue);
     }
+
+    #endregion
   }
 }

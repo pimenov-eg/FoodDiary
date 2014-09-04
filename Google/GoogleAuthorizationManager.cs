@@ -1,8 +1,6 @@
-﻿using Google.GData.Client;
+﻿using System;
+using Google.GData.Client;
 using Google.GData.Spreadsheets;
-using System;
-using System.Configuration;
-using System.Collections.Specialized;
 
 namespace Google
 {
@@ -11,10 +9,16 @@ namespace Google
   /// </summary>
   public static class GoogleAuthorizationManager
   {
+    #region Поля и свойства
+
     /// <summary>
     /// Параметры авторизации.
     /// </summary>
     public static OAuth2Parameters AuthorizationParameters;
+
+    #endregion
+
+    #region Методы
 
     /// <summary>
     /// Получить строку авторизации.
@@ -51,8 +55,8 @@ namespace Google
       OAuthUtil.GetAccessToken(parameters);
 
       // Initialize the variables needed to make the request
-      var requestFactory = new GOAuth2RequestFactory(null, "FoodDiary", parameters);
-      SpreadsheetsManager.Service = new SpreadsheetsService("FoodDiary");
+      var requestFactory = new GOAuth2RequestFactory(null, "Google", parameters);
+      SpreadsheetsManager.Service = new SpreadsheetsService("Google");
       SpreadsheetsManager.Service.RequestFactory = requestFactory;
 
       OnSpreadsheetsServiceInitialized();
@@ -60,12 +64,20 @@ namespace Google
       return SpreadsheetsManager.Service;
     }
 
+    /// <summary>
+    /// Событие на завершение иницилазиации сервиса Google Spreadsheet.
+    /// </summary>
     public static event EventHandler SpreadsheetsServiceInitialized;
 
+    /// <summary>
+    /// Генерация события на завершение инициализации сервиса Google Spreadsheet.
+    /// </summary>
     public static void OnSpreadsheetsServiceInitialized()
     {
       if (SpreadsheetsServiceInitialized != null)
         SpreadsheetsServiceInitialized(null, EventArgs.Empty);
     }
+
+    #endregion
   }
 }
