@@ -72,6 +72,8 @@
     <Compile Include="AddProductWindow.xaml.cs">
       <DependentUpon>AddProductWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\InvertBooleanConverter.cs" />
+    <Compile Include="Converters\InvertBooleanToVisibilityConverter.cs" />
     <Compile Include="GooglePortionStorage.cs" />
     <Compile Include="GoogleProductStorage.cs" />
     <Compile Include="Interfaces\IPortionStorage.cs" />

@@ -4,20 +4,8 @@
         xmlns:view="clr-namespace:FoodDiary.View"
         xmlns:viewModel="clr-namespace:FoodDiary.ViewModel"
         Title="Food diary"
-        Height="800" Width="800">
+        Height="700" Width="700">
   <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
-    
-    <TextBlock Grid.Row="0" HorizontalAlignment="Right"
-               Margin="5"
-               TextBlock.FontSize="16">
-      <Hyperlink Click="HyperlinkClickHandler">
-        SignUp
-      </Hyperlink>
-    </TextBlock>
     <view:FoodDiaryView Grid.Row="1">
       <view:FoodDiaryView.DataContext>
         <viewModel:FoodDiaryPresenter />

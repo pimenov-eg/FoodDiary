@@ -5,15 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:r="clr-namespace:FoodDiary"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="500" d:DesignWidth="500">
+  
+  <UserControl.Resources>
+    <r:InvertBooleanConverter x:Key="InvertBooleanConverter" />
+  </UserControl.Resources>
+
   <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
       <ColumnDefinition Width="Auto" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
-    <Grid Grid.Column="0">
+    <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+               HorizontalAlignment="Right"
+               Margin="5"
+               TextBlock.FontSize="16">
+      <Hyperlink Click="HyperlinkClickHandler"
+                 IsEnabled="{Binding IsSpreadsheetsServiceInitialized, Converter={StaticResource InvertBooleanConverter}}">
+        SignUp
+      </Hyperlink>
+    </TextBlock>
+
+    <Grid Grid.Row="1" Grid.Column="0">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="*" />
@@ -43,7 +62,7 @@
       </TextBox>
     </Grid>
 
-    <StackPanel Grid.Column="1">
+    <StackPanel Grid.Row="1" Grid.Column="1">
       <Button Content="Туда &gt;"
               Command="{Binding AddToDailyPortionCommand}"
               Margin="5" />
@@ -53,12 +72,9 @@
       <Button Content="AddNewProduct"
               Command="{Binding AddProductCommand}"
               Margin="5" />
-      <Button Content="Test"
-              Command="{Binding TestCommand}"
-              Margin="5" />
     </StackPanel>
 
-    <Grid Grid.Column="2">
+    <Grid Grid.Row="1" Grid.Column="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
         <RowDefinition Height="Auto" />

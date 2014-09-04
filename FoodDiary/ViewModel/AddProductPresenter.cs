@@ -119,7 +119,9 @@ namespace FoodDiary.ViewModel
 
     private bool CanAddProduct(object parameter)
     {
-      return !string.IsNullOrWhiteSpace(this.Name);
+      return !string.IsNullOrWhiteSpace(this.Name)
+        && this.CalValue != 0 &&
+        (this.Protein != 0 || this.Carbohydrate != 0 || this.Fat != 0);
     }
 
     #endregion

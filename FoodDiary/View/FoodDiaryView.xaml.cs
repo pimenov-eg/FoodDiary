@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Google;
 
 namespace FoodDiary.View
 {
@@ -23,6 +24,11 @@ namespace FoodDiary.View
     public FoodDiaryView()
     {
       InitializeComponent();
+    }
+
+    private void HyperlinkClickHandler(object sender, RoutedEventArgs e)
+    {
+      new AuthorizationWindow().ShowDialog();
     }
   }
 }

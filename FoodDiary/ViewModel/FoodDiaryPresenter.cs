@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Google.GData.Spreadsheets;
+using System.Collections.Specialized;
 
 namespace FoodDiary.ViewModel
 {
@@ -19,6 +20,8 @@ namespace FoodDiary.ViewModel
     private readonly IProductStorage productStorage = new GoogleProductStorage();
 
     private readonly IPortionStorage portionStorage = new GooglePortionStorage();
+
+    public bool IsSpreadsheetsServiceInitialized { get; private set; }
 
     private IEnumerable<Product> allProducts;
 
@@ -104,16 +107,21 @@ namespace FoodDiary.ViewModel
 
     private void SpreadsheetsServiceInitializedHandler(object sender, EventArgs e)
     {
+      this.IsSpreadsheetsServiceInitialized = true;
+      this.RaisePropertyChangedEvent("IsSpreadsheetsServiceInitialized");
       this.AllProducts = this.productStorage.GetAllProducts();
-      // TODO сделать нормальное означивание с подпиской
       var currentDaily = this.portionStorage.GetCurrentDailyPortion().AllEatingProducts;
       this.DailyPortion.AddRange(currentDaily);
-      //this.RaisePropertyChangedEvent("DailyPortion");
+    }
+
+    private void DailyPortionCollectionChangedHandler(object sender, NotifyCollectionChangedEventArgs e)
+    {
+      RaisePropertyChangedEvent("CalResult");
     }
 
     #region Команды добавления/удаления продуктов из дневного рациона
 
-    public ICommand AddToDailyPortionCommand { get { return new DelegateCommand(this.AddToDailyPortion); } }
+    public ICommand AddToDailyPortionCommand { get { return new DelegateCommand(this.AddToDailyPortion, this.CanAddToDailyPortion); } }
 
     private void AddToDailyPortion(object parameter)
     {
@@ -125,22 +133,61 @@ namespace FoodDiary.ViewModel
       this.DailyPortion.Add(oneTimePortion);
     }
 
-    public ICommand RemoveFromDailyPortionCommand { get { return new DelegateCommand(this.RemoveFromDailyPortion); } }
+    private bool CanAddToDailyPortion(object parameter)
+    {
+      return this.IsSpreadsheetsServiceInitialized &&
+        this.SelectedProduct != null && !string.IsNullOrWhiteSpace(this.SelectedProductWeight);
+    }
+
+    public ICommand RemoveFromDailyPortionCommand { get { return new DelegateCommand(this.RemoveFromDailyPortion, this.CanRemoveFromDailyPortion); } }
 
     private void RemoveFromDailyPortion(object parameter)
     {
       this.DailyPortion.Remove(this.SelectedOneTimePortion);
     }
 
+    private bool CanRemoveFromDailyPortion(object parameter)
+    {
+      return this.IsSpreadsheetsServiceInitialized &&
+        this.DailyPortion.Any();
+    }
+
     #endregion
 
     #region Команда добавления нового продукта
 
-    public ICommand AddProductCommand { get { return new DelegateCommand(this.AddProduct); } }
+    public ICommand AddProductCommand { get { return new DelegateCommand(this.AddProduct, this.CanAddProduct); } }
 
     private void AddProduct(object parameter)
     {
       new AddProductWindow().ShowDialog();
+    }
+
+    private bool CanAddProduct(object parameter)
+    {
+      return this.IsSpreadsheetsServiceInitialized;
+    }
+
+    #endregion
+
+    #region Команда сохранения дневного рациона в Google-таблицу
+
+    public ICommand SaveDailyPortionCommand { get { return new DelegateCommand(this.SaveDailyPortion, this.CanSaveDailyPortion); } }
+
+    private void SaveDailyPortion(object parameter)
+    {
+      var dailyPortion = new DailyPortion
+      {
+        Date = DateTime.Now.ToShortDateString(),
+        AllEatingProducts = new List<OneTimePortion>(this.DailyPortion)
+      };
+      this.portionStorage.SaveDailyPortion(dailyPortion);
+    }
+
+    private bool CanSaveDailyPortion(object parameter)
+    {
+      return this.IsSpreadsheetsServiceInitialized &&
+        this.DailyPortion.Any();
     }
 
     #endregion
@@ -151,35 +198,7 @@ namespace FoodDiary.ViewModel
     {
       GoogleAuthorizationManager.SpreadsheetsServiceInitialized += this.SpreadsheetsServiceInitializedHandler;
       this.DailyPortion = new ObservableRangeCollection<OneTimePortion>();
-      this.DailyPortion.CollectionChanged += DailyPortionCollectionChangedHandler;
-    }
-
-    void DailyPortionCollectionChangedHandler(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-      RaisePropertyChangedEvent("CalResult");
-    }
-
-    public ICommand TestCommand { get { return new DelegateCommand(this.Test); } }
-
-    private void Test(object parameter)
-    {
-      
-    }
-
-    #endregion
-
-    #region Команда сохранения дневного рациона в Google-таблицу
-
-    public ICommand SaveDailyPortionCommand { get { return new DelegateCommand(this.SaveDailyPortion); } }
-
-    private void SaveDailyPortion(object parameter)
-    {
-      var dailyPortion = new DailyPortion
-      {
-        Date = DateTime.Now.ToShortDateString(),
-        AllEatingProducts = new List<OneTimePortion>(this.DailyPortion)
-      };
-      this.portionStorage.SaveDailyPortion(dailyPortion);
+      this.DailyPortion.CollectionChanged += this.DailyPortionCollectionChangedHandler;
     }
 
     #endregion

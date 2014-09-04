@@ -22,8 +22,6 @@ namespace Google
       }
     }
 
-    public ICommand AuthorizeCommand { get { return new DelegateCommand(this.Authorize); } }
-
     public event EventHandler PresenterClosed;
 
     public void OnPresenterClosed()
@@ -32,26 +30,29 @@ namespace Google
         this.PresenterClosed(this, EventArgs.Empty);
     }
 
+    #region Команда авторизации на сервисе Google Spreadsheet
+
+    public ICommand AuthorizeCommand { get { return new DelegateCommand(this.Authorize, this.CanAuthorize); } }
+
     private void Authorize(object parameter)
     {
       GoogleAuthorizationManager.InitializeSpreadsheetsService(GoogleAuthorizationManager.AuthorizationParameters, this.AccessCode);
       this.OnPresenterClosed();
     }
 
-
-    public AuthorizationPresenter()
-    {
-      _deleteCustomerCommand = new DelegateCommand(DeleteCustomer, CanDeleteCustomer);
-    }
-    private readonly ICommand _deleteCustomerCommand;
-    private bool CanDeleteCustomer(object state)
+    private bool CanAuthorize(object parameter)
     {
       return true;
     }
 
-    private void DeleteCustomer(object state)
+    #endregion
+
+    #region Конструкторы
+
+    public AuthorizationPresenter()
     {
-      
     }
+
+    #endregion
   }
 }
