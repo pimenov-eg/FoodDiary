@@ -9,10 +9,12 @@
   
   <UserControl.Resources>
     <r:InvertBooleanConverter x:Key="InvertBooleanConverter" />
+    <r:ForegroundConverter x:Key="ForegroundConverter" />
   </UserControl.Resources>
 
   <Grid>
     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
@@ -22,6 +24,7 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
+    <!-- Авторизация -->
     <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
                HorizontalAlignment="Right"
                Margin="5"
@@ -33,10 +36,11 @@
       </Hyperlink>
     </TextBlock>
 
+    <!-- Операции с продуктами -->
     <Grid Grid.Row="1" Grid.Column="0">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="3*" />
@@ -64,6 +68,11 @@
           </Binding>
         </TextBox.Text>
       </TextBox>
+
+      <Button Grid.Row="1" Grid.Column="0"
+              Content="Добавить новый"
+              Command="{Binding AddProductCommand}"
+              Margin="5" />
     </Grid>
 
     <StackPanel Grid.Row="1" Grid.Column="1">
@@ -73,15 +82,12 @@
       <Button Content="&lt; Сюда"
               Command="{Binding RemoveFromDailyPortionCommand}"
               Margin="5" />
-      <Button Content="AddNewProduct"
-              Command="{Binding AddProductCommand}"
-              Margin="5" />
     </StackPanel>
 
-    <Grid Grid.Row="1" Grid.Column="2">
+    <!-- Дневной рацион -->
+    <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
-        <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
@@ -90,23 +96,136 @@
                ItemTemplate="{DynamicResource MetroListBoxItemTemplate}"
                ItemContainerStyle="{DynamicResource MetroListBoxItemStyle}"
                Grid.Row="0"/>
-      <Grid Grid.Row="1">
+      <Button Grid.Row="1"
+              Content="Сохранить"
+              Command="{Binding SaveDailyPortionCommand}" />
+    </Grid>
+    
+    <!-- Итоги -->
+    <Grid Grid.Row="2" Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Column="0"
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+               Content="Сегодня"
+               HorizontalContentAlignment="Center"
+               TextBlock.FontWeight="Bold"
+               Foreground="Red" />
+        
+        <Label Grid.Row="1" Grid.Column="0"
                Margin="5"
-               Content="Итого:"
+               Content="Ккал:"
+               FontWeight="Bold"/>
+        <Label Grid.Row="1" Grid.Column="1"
+               Margin="5"
+               Content="{Binding CalResult}">
+          <Label.Foreground>
+            <MultiBinding Converter="{StaticResource ForegroundConverter}">
+              <Binding Path="CalResult"/>
+              <Binding Path="GoalCalResult"/>
+            </MultiBinding>
+          </Label.Foreground>
+        </Label>
+        
+        <Label Grid.Row="2" Grid.Column="0"
+               Margin="5"
+               Content="Белков:"
                TextBlock.FontWeight="Bold"/>
-        <Label Grid.Column="1"
+        <Label Grid.Row="2" Grid.Column="1"
                Margin="5"
-               Content="{Binding CalResult}" />
+               Content="{Binding ProteinResult}">
+          <Label.Foreground>
+            <MultiBinding Converter="{StaticResource ForegroundConverter}">
+              <Binding Path="ProteinResult"/>
+              <Binding Path="GoalProteinResult"/>
+            </MultiBinding>
+          </Label.Foreground>
+        </Label>
+
+        <Label Grid.Row="3" Grid.Column="0"
+               Margin="5"
+               Content="Углеводов:"
+               TextBlock.FontWeight="Bold"/>
+        <Label Grid.Row="3" Grid.Column="1"
+               Margin="5"
+               Content="{Binding CarbohydrateResult}">
+          <Label.Foreground>
+            <MultiBinding Converter="{StaticResource ForegroundConverter}">
+              <Binding Path="CarbohydrateResult"/>
+              <Binding Path="GoalCarbohydrateResult"/>
+            </MultiBinding>
+          </Label.Foreground>
+        </Label>
+
+        <Label Grid.Row="4" Grid.Column="0"
+               Margin="5"
+               Content="Жиров:"
+               TextBlock.FontWeight="Bold"/>
+        <Label Grid.Row="4" Grid.Column="1"
+               Margin="5"
+               Content="{Binding FatResult}">
+          <Label.Foreground>
+            <MultiBinding Converter="{StaticResource ForegroundConverter}">
+              <Binding Path="FatResult"/>
+              <Binding Path="GoalFatResult"/>
+            </MultiBinding>
+          </Label.Foreground>
+        </Label>
+
+        <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+               Content="Цель"
+               HorizontalContentAlignment="Center"
+               TextBlock.FontWeight="Bold"
+               Foreground="Red" />
+
+        <Label Grid.Row="1" Grid.Column="2"
+               Margin="5"
+               Content="Ккал:"
+               FontWeight="Bold"/>
+        <Label Grid.Row="1" Grid.Column="3"
+               Margin="5"
+               Content="{Binding GoalCalResult}" />
+
+        <Label Grid.Row="2" Grid.Column="2"
+               Margin="5"
+               Content="Белков:"
+               TextBlock.FontWeight="Bold"/>
+        <Label Grid.Row="2" Grid.Column="3"
+               Margin="5"
+               Content="{Binding GoalProteinResult}" />
+
+        <Label Grid.Row="3" Grid.Column="2"
+               Margin="5"
+               Content="Углеводов:"
+               TextBlock.FontWeight="Bold"/>
+        <Label Grid.Row="3" Grid.Column="3"
+               Margin="5"
+               Content="{Binding GoalCarbohydrateResult}" />
+
+        <Label Grid.Row="4" Grid.Column="2"
+               Margin="5"
+               Content="Жиров:"
+               TextBlock.FontWeight="Bold"/>
+        <Label Grid.Row="4" Grid.Column="3"
+               Margin="5"
+               Content="{Binding GoalFatResult}" />
       </Grid>
-      <Button Grid.Row="2"
-              Content="Save"
-              Command="{Binding SaveDailyPortionCommand}" />
     </Grid>
   </Grid>
 </UserControl>

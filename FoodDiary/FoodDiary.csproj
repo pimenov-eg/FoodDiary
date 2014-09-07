@@ -72,11 +72,14 @@
     <Compile Include="AddProductWindow.xaml.cs">
       <DependentUpon>AddProductWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\ForegroundConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\InvertBooleanToVisibilityConverter.cs" />
     <Compile Include="GooglePortionStorage.cs" />
+    <Compile Include="GoogleSettings.cs" />
     <Compile Include="GoogleProductStorage.cs" />
     <Compile Include="Interfaces\IPortionStorage.cs" />
+    <Compile Include="Interfaces\ISettings.cs" />
     <Compile Include="Interfaces\IProductStorage.cs" />
     <Compile Include="Model\DailyPortion.cs" />
     <Compile Include="Model\OneTimePortion.cs" />

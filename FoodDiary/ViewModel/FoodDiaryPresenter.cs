@@ -29,6 +29,11 @@ namespace FoodDiary.ViewModel
     private readonly IPortionStorage portionStorage = new GooglePortionStorage();
 
     /// <summary>
+    /// Настройки дневника питания.
+    /// </summary>
+    private readonly ISettings settings = new GoogleSettings();
+
+    /// <summary>
     /// Признак того, что сервис Google Spreadsheet инициализирован.
     /// </summary>
     public bool IsSpreadsheetsServiceInitialized { get; private set; }
@@ -121,13 +126,99 @@ namespace FoodDiary.ViewModel
     {
       get
       {
-        var dailyPortion = new DailyPortion
+        return this.currentDailyPortion.TotalCalValue.ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Итоговая дневное потребление белков.
+    /// </summary>
+    public string ProteinResult
+    {
+      get
+      {
+        return this.currentDailyPortion.TotalProteinValue.ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Итоговая дневное потребление углеводов.
+    /// </summary>
+    public string CarbohydrateResult
+    {
+      get
+      {
+        return this.currentDailyPortion.TotalCarbohydrateValue.ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Итоговая дневное потребление жиров.
+    /// </summary>
+    public string FatResult
+    {
+      get
+      {
+        return this.currentDailyPortion.TotalFatValue.ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Целевая итоговая дневная калорийность.
+    /// </summary>
+    public string GoalCalResult
+    {
+      get
+      {
+        return this.settings.NeedCcal.ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Целевое итоговое дневное потребление белков.
+    /// </summary>
+    public string GoalProteinResult
+    {
+      get
+      {
+        return (this.settings.Weight * this.settings.NeedProtein).ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Целевое итоговое дневное потребление углеводов.
+    /// </summary>
+    public string GoalCarbohydrateResult
+    {
+      get
+      {
+        return (this.settings.Weight * this.settings.NeedCarbohydrate).ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Целевое итоговое дневное потребление жиров.
+    /// </summary>
+    public string GoalFatResult
+    {
+      get
+      {
+        return (this.settings.Weight * this.settings.NeedFat).ToString("N");
+      }
+    }
+
+    /// <summary>
+    /// Текущий дневной рацион.
+    /// </summary>
+    private DailyPortion currentDailyPortion
+    {
+      get
+      {
+        return new DailyPortion
         {
           Date = DateTime.Now.ToShortDateString(),
           AllEatingProducts = new List<OneTimePortion>(this.DailyPortion)
         };
-
-        return dailyPortion.TotalCalValue.ToString("N");
       }
     }
 
@@ -145,9 +236,19 @@ namespace FoodDiary.ViewModel
       this.IsSpreadsheetsServiceInitialized = true;
       this.RaisePropertyChangedEvent("IsSpreadsheetsServiceInitialized");
 
+      this.InitializeSettings();
       this.AllProducts = this.productStorage.GetAllProducts();
       var currentDaily = this.portionStorage.GetCurrentDailyPortion().AllEatingProducts;
       this.DailyPortion.AddRange(currentDaily);
+    }
+
+    private void InitializeSettings()
+    {
+      this.settings.Initialize();
+      this.RaisePropertyChangedEvent("GoalCalResult");
+      this.RaisePropertyChangedEvent("GoalProteinResult");
+      this.RaisePropertyChangedEvent("GoalCarbohydrateResult");
+      this.RaisePropertyChangedEvent("GoalFatResult");
     }
 
     /// <summary>
@@ -158,6 +259,9 @@ namespace FoodDiary.ViewModel
     private void DailyPortionCollectionChangedHandler(object sender, NotifyCollectionChangedEventArgs e)
     {
       this.RaisePropertyChangedEvent("CalResult");
+      this.RaisePropertyChangedEvent("ProteinResult");
+      this.RaisePropertyChangedEvent("CarbohydrateResult");
+      this.RaisePropertyChangedEvent("FatResult");
     }
 
     #endregion

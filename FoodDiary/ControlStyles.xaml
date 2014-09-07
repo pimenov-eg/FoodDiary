@@ -17,11 +17,14 @@
   <Style TargetType="{x:Type TextBox}">
     <Setter Property="FontSize" Value="16" />
     <Setter Property="FontFamily" Value="Segoe UI Light"/>
+    <Setter Property="Padding" Value="4 4" />
+    <Setter Property="Margin" Value="0, 3" />
   </Style>
 
   <Style TargetType="{x:Type TextBlock}">
     <Setter Property="FontSize" Value="16" />
     <Setter Property="FontFamily" Value="Segoe UI Light"/>
+    <Setter Property="Margin" Value="0, 3" />
   </Style>
 
   <!-- Шаблон Metro-кнопок -->
@@ -154,8 +157,6 @@
     </Setter>
   </Style>
 
-
-
   <!-- Flat ComboBox -->
   <SolidColorBrush x:Key="ComboBoxNormalBorderBrush" Color="#e3e9ef" />
   <SolidColorBrush x:Key="ComboBoxNormalBackgroundBrush" Color="#fff" />
@@ -184,7 +185,8 @@
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="UIElement.IsMouseOver" Value="True">
-        <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="WhiteSmoke"/>
+        <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="DimGray"/>
+        <Setter Property="Fill" TargetName="Arrow" Value="White"/>
       </Trigger>
       <Trigger Property="ToggleButton.IsChecked" Value="True">
         <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="WhiteSmoke"/>
@@ -200,7 +202,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="ComboBoxFlatStyle"  TargetType="{x:Type ComboBox}">
+  <Style TargetType="{x:Type ComboBox}">
     <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
     <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
@@ -208,6 +210,7 @@
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     <Setter Property="TextElement.Foreground" Value="Black"/>
     <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Padding" Value="5 5"/>
     <Setter Property="Control.Template">
       <Setter.Value>
         <ControlTemplate TargetType="ComboBox">
@@ -233,8 +236,7 @@
                 </ControlTemplate>
               </TextBox.Template>
             </TextBox>
-            <!-- Popup showing items -->
-            <Popup Name="Popup" Placement="Bottom"
+            <Popup Name="PART_Popup" Placement="Bottom"
                    Focusable="False" AllowsTransparency="True"
                    IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
                    PopupAnimation="Slide">
@@ -270,5 +272,36 @@
       </Setter.Value>
     </Setter>
   </Style>
-  <!-- End of Flat ComboBox -->
+
+  <Style TargetType="{x:Type ComboBoxItem}">
+    <Setter Property="SnapsToDevicePixels" Value="true" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="FontFamily" Value="Segoe UI Light" />
+    <Setter Property="OverridesDefaultStyle" Value="true"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBoxItem">
+          <Border x:Name="Border"
+                  Padding="5"
+                  Margin="2"
+                  BorderThickness="2"
+                  CornerRadius="0"
+                  Background="Transparent"
+                  BorderBrush="Transparent" >
+            <TextBlock x:Name="TextBlock">
+              <ContentPresenter />
+            </TextBlock>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsHighlighted" Value="true">
+              <Setter TargetName="Border" Property="Background" Value="DimGray"/>
+              <Setter TargetName="TextBlock" Property="Foreground" Value="White"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 </ResourceDictionary>

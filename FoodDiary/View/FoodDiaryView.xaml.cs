@@ -23,30 +23,30 @@ namespace FoodDiary.View
     private void ComboBoxLoadedHandler(object sender, RoutedEventArgs e)
     {
       // http://www.codeproject.com/Questions/410084/Autocomplete-Combobox-in-WPF
-      var comboBox = (ComboBox)sender;
-      var textBox = comboBox.Template.FindName("PART_EditableTextBox", comboBox) as TextBox;
-      var popup = comboBox.Template.FindName("PART_Popup", comboBox) as Popup;
-      if (textBox != null)
-      {
-        textBox.TextChanged += delegate
-        {
-          comboBox.Items.Filter += (item) =>
-          {
-            if (item.ToString().StartsWith(textBox.Text))
-            {
-              popup.IsOpen = true;
-              return true;
+      //var comboBox = (ComboBox)sender;
+      //var textBox = comboBox.Template.FindName("PART_EditableTextBox", comboBox) as TextBox;
+      //var popup = comboBox.Template.FindName("PART_Popup", comboBox) as Popup;
+      //if (textBox != null)
+      //{
+      //  textBox.TextChanged += delegate
+      //  {
+      //    comboBox.Items.Filter += (item) =>
+      //    {
+      //      if (item.ToString().StartsWith(textBox.Text))
+      //      {
+      //        popup.IsOpen = true;
+      //        return true;
 
-            }
-            else
-            {
-              // popup.IsOpen = false;
-              return false;
-            }
-          };
+      //      }
+      //      else
+      //      {
+      //        // popup.IsOpen = false;
+      //        return false;
+      //      }
+      //    };
 
-        };
-      }
+      //  };
+      //}
     }
   }
 }
