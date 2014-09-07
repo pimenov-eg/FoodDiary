@@ -4,6 +4,7 @@
         xmlns:view="clr-namespace:FoodDiary.View"
         xmlns:viewModel="clr-namespace:FoodDiary.ViewModel"
         Title="Дневник питания"
+        Icon="Icon.png"
         WindowStartupLocation="CenterScreen"
         Height="600" Width="800">
   <Grid>

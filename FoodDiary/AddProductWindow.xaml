@@ -5,6 +5,7 @@
         xmlns:viewModel="clr-namespace:FoodDiary.ViewModel"
         WindowStartupLocation="CenterOwner"
         Height="300" Width="500"
+        Icon="Icon.png"
         Title="Создание нового продукта">
   <view:AddProductView>
     <view:AddProductView.DataContext>
