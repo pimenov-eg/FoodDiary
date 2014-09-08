@@ -237,7 +237,7 @@ namespace FoodDiary.ViewModel
       this.RaisePropertyChangedEvent("IsSpreadsheetsServiceInitialized");
 
       this.InitializeSettings();
-      this.AllProducts = this.productStorage.GetAllProducts();
+      this.AllProducts = this.productStorage.GetAllProducts().OrderBy(p => p.Name);
       var currentDaily = this.portionStorage.GetCurrentDailyPortion().AllEatingProducts;
       this.DailyPortion.AddRange(currentDaily);
     }
