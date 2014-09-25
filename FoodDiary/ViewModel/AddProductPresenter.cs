@@ -3,6 +3,7 @@ using System.Windows.Input;
 using FoodDiary.Interfaces;
 using FoodDiary.Model;
 using SimpleMVVM;
+using System.Windows;
 
 namespace FoodDiary.ViewModel
 {
@@ -129,7 +130,10 @@ namespace FoodDiary.ViewModel
         Carbohydrate = this.Carbohydrate != null ? float.Parse(this.Carbohydrate, CultureInfo.InvariantCulture.NumberFormat) :0,
         Fat = this.Fat != null ? float.Parse(this.Fat, CultureInfo.InvariantCulture.NumberFormat) : 0
       };
-      this.productStorage.AddProduct(product);
+      if (ProductCache.ContainsProduct(product))
+        MessageBox.Show(string.Format("Продукт '{0}' уже есть в хранилище", product.Name));
+      else
+        this.productStorage.AddProduct(product);
     }
 
     private bool CanAddProduct(object parameter)

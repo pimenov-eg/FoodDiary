@@ -38,8 +38,6 @@ namespace FoodDiary.ViewModel
     /// </summary>
     public bool IsSpreadsheetsServiceInitialized { get; private set; }
 
-    private IEnumerable<Product> allProducts;
-
     /// <summary>
     /// Все продукты.
     /// </summary>
@@ -47,13 +45,9 @@ namespace FoodDiary.ViewModel
     {
       get
       {
-        return this.allProducts;
-      }
-
-      set
-      {
-        this.allProducts = value;
-        this.RaisePropertyChangedEvent("AllProducts");
+        if (!this.IsSpreadsheetsServiceInitialized)
+          return Enumerable.Empty<Product>();
+        return this.productStorage.GetAllProducts().OrderBy(p => p.Name);
       }
     }
 
@@ -237,7 +231,7 @@ namespace FoodDiary.ViewModel
       this.RaisePropertyChangedEvent("IsSpreadsheetsServiceInitialized");
 
       this.InitializeSettings();
-      this.AllProducts = this.productStorage.GetAllProducts().OrderBy(p => p.Name);
+      this.RaisePropertyChangedEvent("AllProducts");
       var currentDaily = this.portionStorage.GetCurrentDailyPortion().AllEatingProducts;
       this.DailyPortion.AddRange(currentDaily);
     }
@@ -308,6 +302,7 @@ namespace FoodDiary.ViewModel
     private void AddProduct(object parameter)
     {
       new AddProductWindow().ShowDialog();
+      this.RaisePropertyChangedEvent("AllProducts");
     }
 
     private bool CanAddProduct(object parameter)

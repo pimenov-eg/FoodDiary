@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using FoodDiary.Model;
+﻿using FoodDiary.Model;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FoodDiary
 {
@@ -11,6 +12,16 @@ namespace FoodDiary
     /// <summary>
     /// Все продукты.
     /// </summary>
-    public static IEnumerable<Product> AllProducts { get; set; }
+    public static IList<Product> AllProducts { get; set; }
+
+    /// <summary>
+    /// Проверить наличие продукта в кэше.
+    /// </summary>
+    /// <param name="product">Продукт.</param>
+    /// <returns>True - если продукт в кэше есть.</returns>
+    public static bool ContainsProduct(Product product)
+    {
+      return AllProducts.Any(p => p.Name == product.Name);
+    }
   }
 }

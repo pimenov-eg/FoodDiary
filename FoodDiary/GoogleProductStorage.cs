@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using FoodDiary.Interfaces;
+﻿using FoodDiary.Interfaces;
 using FoodDiary.Model;
 using Google;
 using Google.GData.Spreadsheets;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace FoodDiary
 {
@@ -92,6 +92,7 @@ namespace FoodDiary
         {"fat", product.Fat.ToString("N", CultureInfo.InvariantCulture)}
       };
       SpreadsheetsManager.AddNewRow(listFeed, rowValue);
+      ProductCache.AllProducts.Add(product);
     }
 
     #endregion
